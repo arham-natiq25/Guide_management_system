@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Reservation;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\ProcessPodcast;
 use App\Mail\CustomerDetailSend;
 use App\Mail\GuideBookedMail;
 use App\Models\Guide;
@@ -119,8 +120,7 @@ function save(Request $request) {
         $res->created_by = 'Admin';
         $res->save();
         $guide = Guide::findOrFail($request->guide_id);
-        // Mail::to($guide->user->email)->send(new GuideBookedMail($res));
-        // Mail::to($res->user->email)->send(new CustomerDetailSend($res,$randomPassword));
+        ProcessPodcast::dispatch($guide,$res,$randomPassword);
         // trip
         toastr('Data Inserted Successfully','success');
         return redirect()->route('reservations.home');
@@ -181,7 +181,7 @@ function save(Request $request) {
                 $res->custom_guide_text = empty(!$request->custom_guide_text) ? $request->custom_guide_text : 0;
                 $res->customer_details_text = empty(!$request->customer_details_text) ? $request->customer_details_text : 0;
                 $res->guide_details_text = empty(!$request->guide_details_text) ? $request->guide_details_text : 0;
-                $res->meeting_time = empty(!$request->meeting_time) ? $request->metting_time : '';
+                $res->meeting_time = $request->meeting_time;
                 $res->location_id = $request->location_id;
                 $res->created_by = 'Admin';
                 $res->save();
