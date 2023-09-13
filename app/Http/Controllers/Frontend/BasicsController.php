@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\ProcessPodcast;
 use App\Mail\CustomerDetailSend;
 use App\Mail\GuideBookedMail;
 use App\Models\Guide;
@@ -116,15 +117,13 @@ class BasicsController extends Controller
         $res->location_id = $request->location_id;
         $res->created_by = 'Frontend';
         $res->save();
-        // $guide = Guide::findOrFail($request->guide_id);
-        // try {
-        //     // Your email sending code here
-        //     Mail::to($guide->user->email)->send(new GuideBookedMail($res));
-        //     Mail::to($res->user->email)->send(new CustomerDetailSend($res,$randomPassword));
-        // } catch (\Exception $e) {
-        //     Log::error($e->getMessage());
-        //     Log::error($e->getTraceAsString());
-        // }
+        $guide = Guide::findOrFail($request->guide_id);
+        try {
+            ProcessPodcast::dispatch($guide,$res,$randomPassword);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            Log::error($e->getTraceAsString());
+        }
 
         toastr('Data Inserted Successfully','success');
         return redirect()->route('gms.home');
