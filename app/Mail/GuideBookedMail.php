@@ -15,13 +15,24 @@ class GuideBookedMail extends Mailable
     use Queueable, SerializesModels;
 
     public $reservation;
+    public $guideBody;
+    public $emailTemplet;
     /**
      * Create a new message instance.
      */
-    public function __construct(Reservation $reservation)
+    public function __construct(Reservation $reservation, $guideBody , $emailTemplet)
     {
         $this->reservation = $reservation;
+        $this->guideBody = $guideBody;
+        $this->emailTemplet=$emailTemplet;
     }
+    public function build()
+    {
+        return $this
+            ->subject($this->emailTemplet->subject) // Set the email subject
+            ->html($this->guideBody); // Set the email body as HTML
+    }
+
 
     /**
      * Get the message envelope.
@@ -29,7 +40,7 @@ class GuideBookedMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Guide Booking Details',
+
         );
     }
 
@@ -39,7 +50,7 @@ class GuideBookedMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.guide-booked',
+
         );
     }
 

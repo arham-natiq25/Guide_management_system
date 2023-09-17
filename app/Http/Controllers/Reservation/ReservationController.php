@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Jobs\ProcessPodcast;
 use App\Mail\CustomerDetailSend;
 use App\Mail\GuideBookedMail;
+use App\Models\EmailTemplet;
 use App\Models\Guide;
 use App\Models\Location;
 use App\Models\Reservation;
@@ -119,8 +120,29 @@ function save(Request $request) {
         $res->location_id = $request->location_id;
         $res->created_by = 'Admin';
         $res->save();
+        if ($randomPassword!=null) {
+            $password = $randomPassword;
+        }else{
+            $password = 'You are exsisting user';
+        }
         $guide = Guide::findOrFail($request->guide_id);
-        ProcessPodcast::dispatch($guide,$res,$randomPassword);
+        // HERE ARE THE DETAILS OF SENDING MAIL TO CUSTOMER
+        $titleName="Reservation_confirmation";
+        $emailTemplet = EmailTemplet::where('display_title',$titleName)->first();
+        $emailBody = str_replace(['[customer_name]','[resort_name]','[lenght_of_trip]','[trip_date]','[guide_name]','[guide_phone]','[total]','[password]'],[$res->fname.' '.$res->lname , $res->location->location_name,
+        $res->trip->length, $res->date,$res->guide->fname.' '.$res->guide->lname,$res->guide->mobile,$res->total_fee,$password ],$emailTemplet->notes);
+        Mail::to($res->user->email)->send(new CustomerDetailSend($res,$emailBody,$emailTemplet));
+        // HERE ARE THE DETAILS OF SENDING MAIL TO GUIDE
+        $guideTitle="Guide_booking";
+        $emailTemplet = EmailTemplet::where('display_title',$guideTitle)->first();
+        $guideBody = str_replace(['[guide]','[trip_name]','[customer_name]','[customer_contact]',
+        '[customer_email]','[date]','[location]','[time]'],
+        [$res->guide->fname.' '.$res->guide->lname, $res->trip->trip_name, $res->fname.' '.$res->lname , $res->phone ,
+         $res->user->email , $res->date , $res->location->location_name , $res->trip->start_time
+        ],$emailTemplet->notes);
+        Mail::to($guide->user->email)->send(new GuideBookedMail($res,$guideBody,$emailTemplet));
+
+        // ProcessPodcast::dispatch($guide,$res,$randomPassword);
         // trip
         toastr('Data Inserted Successfully','success');
         return redirect()->route('reservations.home');

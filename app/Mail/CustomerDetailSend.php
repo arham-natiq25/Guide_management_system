@@ -15,22 +15,30 @@ class CustomerDetailSend extends Mailable
     use Queueable, SerializesModels;
 
     public $reservation;
-    public $password;
+    public $emailBody;
+
+    public $emailTemplet;
     /**
      * Create a new message instance.
      */
-    public function __construct(Reservation $reservation, string $password=null)
+    public function __construct(Reservation $reservation, $emailBody , $emailTemplet)
     {
         $this->reservation = $reservation;
-        $this->password = $password;
+        $this->emailBody = $emailBody;
+        $this->emailTemplet=$emailTemplet;
     }
     /**
      * Get the message envelope.
      */
-    public function envelope(): Envelope
+    public function build()
+    {
+        return $this
+            ->subject($this->emailTemplet->subject) // Set the email subject
+            ->html($this->emailBody); // Set the email body as HTML
+    }
+     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Customer Detail Send',
 
         );
     }
@@ -41,7 +49,7 @@ class CustomerDetailSend extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.cust-details',
+
         );
     }
 

@@ -4,6 +4,7 @@ use App\Http\Controllers\Backend\AdminLoginController;
 use App\Http\Controllers\Backend\AgencyController;
 use App\Http\Controllers\Backend\CalendarController;
 use App\Http\Controllers\Backend\CouponController;
+use App\Http\Controllers\Backend\EmailTempletController;
 use App\Http\Controllers\Backend\GuideListingController;
 use App\Http\Controllers\Backend\LocationController;
 use App\Http\Controllers\Backend\RiverController;
@@ -72,6 +73,8 @@ Route::delete('reservation/{id}/delete',[ReservationReservationController::class
 Route::get('/calendars',[CalendarController::class,'index'])->name('calendar.index');
 // SETTING CONTROLLER
 Route::resource('/settings',SettingController::class);
+// EMAIL TEMPLET CONTROLLER
+Route::resource('/email', EmailTempletController::class);
 });
 // GUIDE LOGIN ROUTESS
 Route::middleware(['auth','web','guide'])->group(function(){

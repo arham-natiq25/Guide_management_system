@@ -35,6 +35,6 @@ class ProcessPodcast implements ShouldQueue
     public function handle()
     {
         Mail::to($this->guide->user->email)->send(new GuideBookedMail($this->res));
-        Mail::to($this->res->user->email)->send(new CustomerDetailSend($this->res, $this->randomPassword));
+        // Mail::to($this->res->user->email)->send(new CustomerDetailSend($this->res, $this->randomPassword));
     }
 }

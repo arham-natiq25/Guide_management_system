@@ -157,7 +157,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="./index.html" class="nav-link">
+                    <a href="{{route('email.index')}}" class="nav-link">
                       <p>Email / Text templets</p>
                     </a>
                 </li>
