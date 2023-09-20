@@ -12,6 +12,7 @@ use App\Http\Controllers\Backend\SettingController;
 use App\Http\Controllers\Backend\TripController;
 use App\Http\Controllers\Customers\CustomerLoginController;
 use App\Http\Controllers\Frontend\BasicsController;
+use App\Http\Controllers\Gateways\StripeController;
 use App\Http\Controllers\Guides\GuideLoginController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Reservation\ReservationController as ReservationReservationController;
@@ -75,7 +76,9 @@ Route::get('/calendars',[CalendarController::class,'index'])->name('calendar.ind
 Route::resource('/settings',SettingController::class);
 // EMAIL TEMPLET CONTROLLER
 Route::resource('/email', EmailTempletController::class);
+
 });
+// STRIPE PAYMENT ROUTES
 // GUIDE LOGIN ROUTESS
 Route::middleware(['auth','web','guide'])->group(function(){
     Route::get('/guide/dashboard',[GuideLoginController::class,'index'])->name('guide.dashboard');
@@ -93,5 +96,8 @@ Route::get('/{id}/selecttrip',[BasicsController::class ,'selectDate'])->name('gm
 Route::get('/{id}/customer-details',[BasicsController::class,'customer'])->name('gms.customer');
 Route::post('/customer/save',[BasicsController::class,'savedata'])->name('gms.save');
 
+Route::get('/stripe/payment',[StripeController::class,'payment'])->name('stripe.payment');
+Route::get('/stripe/success',[StripeController::class,'success'])->name('stripe.success');
+Route::get('/stripe/cancel',[StripeController::class,'cancel'])->name('stripe.cancel');
 
 require __DIR__.'/auth.php';

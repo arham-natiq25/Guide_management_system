@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Jobs\ProcessPodcast;
 use App\Mail\CustomerDetailSend;
 use App\Mail\GuideBookedMail;
+use App\Models\EmailTemplet;
 use App\Models\Guide;
 use App\Models\Location;
 use App\Models\Reservation;
@@ -118,12 +119,23 @@ class BasicsController extends Controller
         $res->created_by = 'Frontend';
         $res->save();
         $guide = Guide::findOrFail($request->guide_id);
-        try {
-            ProcessPodcast::dispatch($guide,$res,$randomPassword);
-        } catch (\Exception $e) {
-            Log::error($e->getMessage());
-            Log::error($e->getTraceAsString());
+          if ($randomPassword!=null) {
+            $password = $randomPassword;
+        }else{
+            $password = 'You are exsisting user';
         }
+         // HERE ARE THE DETAILS OF SENDING MAIL TO CUSTOMER
+         $titleName="Reservation_confirmation";
+         $emailTemplet = EmailTemplet::where('display_title',$titleName)->first();
+         $cus =  $this->CusKey($emailTemplet,$res,$password);
+         Mail::to($res->user->email)->send(new CustomerDetailSend($res,$cus,$emailTemplet));
+         // HERE ARE THE DETAILS OF SENDING MAIL TO GUIDE
+         $guideTitle="Guide_booking";
+         $emailTemplet = EmailTemplet::where('display_title',$guideTitle)->first();
+         $gui = $this->GuideKey($emailTemplet,$res);
+         Mail::to($guide->user->email)->send(new GuideBookedMail($res,$gui,$emailTemplet));
+
+         // ProcessPodcast::dispatch($guide,$res,$randomPassword);
 
         toastr('Data Inserted Successfully','success');
         return redirect()->route('gms.home');

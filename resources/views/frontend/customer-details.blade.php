@@ -54,8 +54,9 @@
                 @endforeach
             </select>
         </div>
+
         <div class="form-group col-md-6">
-            <button type="button" class="btn btn-info">Payment</button>
+            <a href="{{ route('stripe.payment') }}" class="btn btn-primary">Payment</a>
         </div>
 
     </div>

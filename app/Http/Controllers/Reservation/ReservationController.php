@@ -13,6 +13,7 @@ use App\Models\Reservation;
 use App\Models\Setting;
 use App\Models\Trip;
 use App\Models\User;
+use App\Traits\EmailServices;
 use App\traits\helper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -21,7 +22,7 @@ use Illuminate\Support\Str;
 
 class ReservationController extends Controller
 {
-    use helper;
+    use helper,EmailServices;
     function index() {
           $reservations= Reservation::with('trip','guide')->get();
           return view('ReservationBlade.index',compact('reservations'));
@@ -129,18 +130,13 @@ function save(Request $request) {
         // HERE ARE THE DETAILS OF SENDING MAIL TO CUSTOMER
         $titleName="Reservation_confirmation";
         $emailTemplet = EmailTemplet::where('display_title',$titleName)->first();
-        $emailBody = str_replace(['[customer_name]','[resort_name]','[lenght_of_trip]','[trip_date]','[guide_name]','[guide_phone]','[total]','[password]'],[$res->fname.' '.$res->lname , $res->location->location_name,
-        $res->trip->length, $res->date,$res->guide->fname.' '.$res->guide->lname,$res->guide->mobile,$res->total_fee,$password ],$emailTemplet->notes);
-        Mail::to($res->user->email)->send(new CustomerDetailSend($res,$emailBody,$emailTemplet));
+        $cus =  $this->CusKey($emailTemplet,$res,$password);
+        Mail::to($res->user->email)->send(new CustomerDetailSend($res,$cus,$emailTemplet));
         // HERE ARE THE DETAILS OF SENDING MAIL TO GUIDE
         $guideTitle="Guide_booking";
         $emailTemplet = EmailTemplet::where('display_title',$guideTitle)->first();
-        $guideBody = str_replace(['[guide]','[trip_name]','[customer_name]','[customer_contact]',
-        '[customer_email]','[date]','[location]','[time]'],
-        [$res->guide->fname.' '.$res->guide->lname, $res->trip->trip_name, $res->fname.' '.$res->lname , $res->phone ,
-         $res->user->email , $res->date , $res->location->location_name , $res->trip->start_time
-        ],$emailTemplet->notes);
-        Mail::to($guide->user->email)->send(new GuideBookedMail($res,$guideBody,$emailTemplet));
+        $gui = $this->GuideKey($emailTemplet,$res);
+        Mail::to($guide->user->email)->send(new GuideBookedMail($res,$gui,$emailTemplet));
 
         // ProcessPodcast::dispatch($guide,$res,$randomPassword);
         // trip
