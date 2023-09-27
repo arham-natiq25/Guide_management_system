@@ -90,14 +90,18 @@ Route::middleware(['auth','web','customer'])->group(function () {
     Route::get('/customer/dashboard',[CustomerLoginController::class,'index'])->name('customer.dashboard');
     Route::get('/customer/reservation',[CustomerLoginController::class,'reservation'])->name('customer.reservations');
 });
-
+// FRONT END ROUTES
 Route::get('/',[BasicsController::class ,'index'])->name('gms.home');
 Route::get('/{id}/selecttrip',[BasicsController::class ,'selectDate'])->name('gms.selectDate');
 Route::get('/{id}/customer-details',[BasicsController::class,'customer'])->name('gms.customer');
 Route::post('/customer/save',[BasicsController::class,'savedata'])->name('gms.save');
+Route::post('/customer/summary',[BasicsController::class,'summary'])->name('gms.summary');
 
-Route::get('/stripe/payment',[StripeController::class,'payment'])->name('stripe.payment');
-Route::get('/stripe/success',[StripeController::class,'success'])->name('stripe.success');
-Route::get('/stripe/cancel',[StripeController::class,'cancel'])->name('stripe.cancel');
+
+Route::post('/stripe/payment',[StripeController::class,'payment'])->name('stripe.payment');
+Route::get('/payment/success', [StripeController::class,'success'])->name('payment.success');
+Route::get('/payment/failed', [StripeController::class,'cancel'])->name('payment.cancel');
+
+
 
 require __DIR__.'/auth.php';

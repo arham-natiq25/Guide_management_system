@@ -55,11 +55,7 @@
             </select>
         </div>
 
-        <div class="form-group col-md-6">
-            <a href="{{ route('stripe.payment') }}" class="btn btn-primary">Payment</a>
-        </div>
-
     </div>
-    <button class="btn btn-success">Submit</button>
+    <button class="btn btn-success">Proceed to next</button>
 </form>
 @endsection

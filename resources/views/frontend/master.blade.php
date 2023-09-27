@@ -36,6 +36,31 @@
 
     {{-- Calendar extension --}}
     <link rel="stylesheet" type="text/css" href="css/calendar.min.css">
+    <style>
+        .custom-card-input {
+    margin-bottom: 20px;
+}
+
+/* Custom styling for the card input label */
+.custom-card-input label {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+/* Custom styling for the Stripe card element */
+#card-element {
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+/* Custom styling for form errors */
+#card-errors {
+    color: #ff0000;
+    margin-top: 10px;
+}
+
+    </style>
 
 </head>
 
